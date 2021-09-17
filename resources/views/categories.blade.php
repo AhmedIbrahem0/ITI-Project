@@ -1,46 +1,23 @@
-
 <x-layout>
-<table class="table table-dark table-striped" >
-<th>Title</th>
-<th>Slug</th>
-<th>Category</th>
-<th>Body</th>
+ 
+<x-postheader :categories="$categories" :currentcategory="$category"/> 
 
-<?php
-//      echo"<pre>";
+  @if($category->posts->count())
+  <x-SpecialArticle :post="$category->posts[0]" />
+ 
+      @if($category->posts->count()>1)
+  <div class="lg:grid lg:grid-cols-6">
+  @foreach($category->posts->skip(1) as $post)
+  {{$post}}
+    <x-Card : class='{{$loop->iteration <3?"col-span-3":"col-span-2"}}' :post="$post"/>
 
-// var_dump($category->posts);
-// echo"</pre>";
-
-
-
-foreach($category->posts as $item){
-    
-    echo"<tr>";
-    
-        echo"<td>";
-        
-        echo $item->title;
-        echo"</td>";
-        
-        echo"<td>";
-        
-        echo $item->slug;
-        echo"</td>";
-        echo"<td>";
-        
-        echo $item->category->name;
-        echo"</td>";
-        echo"<td>";
-        
-        echo $item->body;
-        echo"</td>";
-    echo"<tr>";
-
-}
-
-
-?>
-</table>
+  @endforeach
+  
+  </div>
+  @endif
+  @else
+  <p class="text-center">No Posts added yet</p>
+  @endif
 
 </x-layout>
+ 

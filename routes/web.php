@@ -2,6 +2,8 @@
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Http\Controllers\PostController;
+
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -21,45 +23,25 @@ use function PHPUnit\Framework\fileExists;
 |
 */
 
-Route::get("posts/{post}",function(Post $post){
-   // $post= Post::find($id);
-return view("singlePost",["post"=>$post]);
+Route::get("users/{user:username}", function (User $user) {
+    // $post= Post::find($id);
+    return view("SingleUserPosts", ["user" => $user]);
 });
-Route::get("users/{user:username}",function(User $user){
-   // $post= Post::find($id);
-return view("SingleUserPosts",["user"=>$user]);
+Route::get("users", function () {
+    $users = User::get();
+    return view("users", ["users" => $users]);
 });
-Route::get("users",function( ){
-   $users= User::get();
-return view("users",["users"=>$users]);
+Route::resource('posts',PostController::class)->middleware('auth');
+Route::get("categories/{id}", function (Category $id) {
+    return view(
+        "categories",
+        [
+            "category" => $id,
+            "categories" => Category::all(),
+        ]
+    );
 });
-Route::get("/",function(){
-     
-      return view("post");
- });
-Route::get("posts",function(){
-     
-  $posts=Post::latest()->get();
-     return view("posts",["posts"=>$posts]);
-});
-Route::get("categories/{id}",function(Category $id){
-    
-   // $category=Category::where('id',"=",$id)->first() ;
-  
-   return view("categories",["category"=>$id]);
-});
-// Route::get("posts/{post}",function($post){
-//     $path=__DIR__."/../resources/Posts/{$post}.html";
-   
-//     if(file_exists($path)){
-        
-//        $cached=cache()->remember("posts.{$post}",5,
-//        fn()  => file_get_contents($path)
-//          );
-//         $content=file_get_contents($path);
-//         return view("singlePost",["post"=>$content]);
 
-//     }else{
-//         abort(404);
-//     }
-// })->where('post','[A-z]+');
+Auth::routes();
+
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
